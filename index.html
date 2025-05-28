@@ -1,35 +1,99 @@
+# 输出一个精修版 index.html，适配 GitHub Pages 展示效果
+refined_html = """
 <!DOCTYPE html>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
   <title>功能简介导出工具（分版本块）</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    .version-block { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-    .version-title { font-weight: bold; margin-bottom: 5px; }
-    .input-row { margin-bottom: 6px; }
-    textarea { width: 100%; height: 80px; }
+    body {
+      font-family: "Microsoft YaHei", sans-serif;
+      padding: 40px;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .version-block {
+      border: 1px solid #ccc;
+      padding: 12px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+    }
+    .version-title {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .input-row {
+      margin-bottom: 12px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+    }
+    input[type="text"] {
+      width: 60%;
+      padding: 6px 10px;
+      font-size: 14px;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      padding: 8px;
+      font-size: 14px;
+      resize: vertical;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      margin: 6px 4px 12px 0;
+      padding: 8px 14px;
+      font-size: 14px;
+      border-radius: 5px;
+      border: none;
+      background-color: #007bff;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .section {
+      margin-bottom: 30px;
+    }
   </style>
 </head>
 <body>
-  <h2>功能分组按版本</h2>
+  <div class="container">
+    <h2>功能分组按版本</h2>
 
-  <div>
-    <label>开发者：<input type="text" id="developerInput" placeholder="请输入开发者" oninput="forceBind()"></label><br>
-    <label>设计师：<input type="text" id="designerInput" placeholder="请输入设计师" oninput="forceBind()"></label><br>
-    <label><input type="checkbox" id="appendWelcome" checked> 在简介末尾添加欢迎语句</label><br>
-    <label>欢迎语内容：<input type="text" id="welcomeText" value="欢迎试用，让你的手腕焕然⼀新！" style="width: 60%;"></label><br><br>
+    <div class="section">
+      <label>开发者：<input type="text" id="developerInput" placeholder="请输入开发者" oninput="forceBind()"></label>
+      <label>设计师：<input type="text" id="designerInput" placeholder="请输入设计师" oninput="forceBind()"></label>
+      <label><input type="checkbox" id="appendWelcome" checked> 在简介末尾添加欢迎语句</label>
+      <label>欢迎语内容：<input type="text" id="welcomeText" value="欢迎试用，让你的手腕焕然⼀新！"></label>
+    </div>
+
+    <div id="versionInputs" class="section"></div>
+    <div class="section">
+      <button onclick="copyAllTitles()">一键复制中文名到所有版本</button>
+      <button onclick="copyAllFeatures()">一键复制功能介绍到所有版本</button>
+      <button onclick="copyAllHighlights()">一键复制设计亮点到所有版本</button>
+      <button onclick="copyAllInspirations()">一键复制设计灵感到所有版本</button>
+    </div>
+
+    <div id="versionBlocks" class="section"></div>
+    <button onclick="downloadVersionTxt2()">导出为TXT简介</button>
   </div>
-
-  <div id="versionInputs"></div>
-  <button onclick="copyAllTitles()">一键复制中文名到所有版本</button>
-  <button onclick="copyAllFeatures()">一键复制功能介绍到所有版本</button>
-  <button onclick="copyAllHighlights()">一键复制设计亮点到所有版本</button>
-  <button onclick="copyAllInspirations()">一键复制设计灵感到所有版本</button>
-  <br><br>
-
-  <div id="versionBlocks"></div>
-  <button onclick="downloadVersionTxt2()">导出为TXT简介</button>
 
   <script>
     const versions = [
@@ -46,14 +110,15 @@
         <div class="input-row">
           <label>${ver} 中文名：<input type="text" class="titleInput" data-version="${ver}"></label>
         </div>`;
-
       versionBlocks.innerHTML += `
         <div class="version-block">
           <div class="version-title">${ver}</div>
-          <label>【表盘设计说明】</label><br>
-          <label>设计亮点：<br><textarea class="highlightText" data-version="${ver}" placeholder="请输入设计亮点"></textarea></label><br>
-          <label>设计灵感：<textarea class="inspirationText" data-version="${ver}" placeholder="请输入设计灵感"></textarea></label><br>
-          <label>功能介绍：<br><textarea class="featureText" data-version="${ver}" placeholder="请输入该版本功能介绍"></textarea></label>
+          <label>设计亮点：</label>
+          <textarea class="highlightText" data-version="${ver}" placeholder="请输入设计亮点"></textarea>
+          <label>设计灵感：</label>
+          <textarea class="inspirationText" data-version="${ver}" placeholder="请输入设计灵感"></textarea>
+          <label>功能介绍：</label>
+          <textarea class="featureText" data-version="${ver}" placeholder="请输入该版本功能介绍"></textarea>
         </div>`;
     });
 
@@ -76,36 +141,34 @@
       content += `设计师：${designer || '未填写'}\n\n`;
 
       versions.forEach(ver => {
-        const title = document.querySelector(`.titleInput[data-version='${ver}']`)?.value.trim() || '';
-        const highlight = document.querySelector(`.highlightText[data-version='${ver}']`)?.value.trim() || '';
-        const inspiration = document.querySelector(`.inspirationText[data-version='${ver}']`)?.value.trim() || '';
-        const feature = document.querySelector(`.featureText[data-version='${ver}']`)?.value.trim() || '';
+        const title = document.querySelector(\`.titleInput[data-version='\${ver}']\`)?.value.trim() || '';
+        const highlight = document.querySelector(\`.highlightText[data-version='\${ver}']\`)?.value.trim() || '';
+        const inspiration = document.querySelector(\`.inspirationText[data-version='\${ver}']\`)?.value.trim() || '';
+        const feature = document.querySelector(\`.featureText[data-version='\${ver}']\`)?.value.trim() || '';
 
-        // 正文内容（不含版本名和中文名）
         const blockTextBody =
-          `【表盘设计说明】\n` +
-          `设计亮点：\n${highlight || '未填写'}\n` +
-          `设计灵感：${inspiration || '未填写'}\n` +
-          `功能介绍：\n${feature || '未填写'}\n` +
-          `【设计师信息】该表盘由外部设计师团队${designer || '___'}设计并制作\n` +
-          (includeWelcome && welcomeText ? `${welcomeText}\n` : '');
+          \`【表盘设计说明】\n\` +
+          \`设计亮点：\n\${highlight || '未填写'}\n\` +
+          \`设计灵感：\${inspiration || '未填写'}\n\` +
+          \`功能介绍：\n\${feature || '未填写'}\n\` +
+          \`【设计师信息】该表盘由外部设计师团队\${designer || '___'}设计并制作\n\` +
+          (includeWelcome && welcomeText ? \`\${welcomeText}\n\` : '');
 
-        const blockText = `【${ver}】\n` +
-          `中文名：${title || '未填写'}\n` +
-          blockTextBody + `\n`;
+        const blockText = \`【\${ver}】\n\` +
+          \`中文名：\${title || '未填写'}\n\` +
+          blockTextBody + \`\n\`;
 
-          const plainLength =
-  blockTextBody.replace(/\n/g, '').length +
-  '【表盘设计说明】'.length; // 实际是 8
+        const plainLength = blockTextBody.replace(/\\n/g, '').length + '【表盘设计说明】'.length;
+
         if (plainLength >= maxLength) {
-          tooLongVersions.push(`${ver}（${plainLength} 字）`);
+          tooLongVersions.push(\`\${ver}（\${plainLength} 字）\`);
         }
 
         content += blockText;
       });
 
       if (tooLongVersions.length > 0) {
-        alert("以下版本简介超过" + maxLength + "字：\n" + tooLongVersions.join("\n"));
+        alert("以下版本简介超过" + maxLength + "字：\\n" + tooLongVersions.join("\\n"));
       }
 
       saveTxt(content, "功能简介.txt");
@@ -151,3 +214,9 @@
   </script>
 </body>
 </html>
+"""
+
+with open("/mnt/data/index_refined.html", "w", encoding="utf-8") as f:
+    f.write(refined_html)
+
+"/mnt/data/index_refined.html"
