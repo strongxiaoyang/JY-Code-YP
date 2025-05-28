@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>功能简介导出工具（分版本块）</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .version-block { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+    .version-title { font-weight: bold; margin-bottom: 5px; }
+    .input-row { margin-bottom: 6px; }
+    textarea { width: 100%; height: 80px; }
+  </style>
+</head>
+<body>
+  <h2>功能分组按版本</h2>
+
+  <div>
+    <label>开发者：<input type="text" id="developerInput" placeholder="请输入开发者" oninput="forceBind()"></label><br>
+    <label>设计师：<input type="text" id="designerInput" placeholder="请输入设计师" oninput="forceBind()"></label><br>
+    <label><input type="checkbox" id="appendWelcome" checked> 在简介末尾添加欢迎语句</label><br>
+    <label>欢迎语内容：<input type="text" id="welcomeText" value="欢迎试用，让你的手腕焕然⼀新！" style="width: 60%;"></label><br><br>
+  </div>
+
+  <div id="versionInputs"></div>
+  <button onclick="copyAllTitles()">一键复制中文名到所有版本</button>
+  <button onclick="copyAllFeatures()">一键复制功能介绍到所有版本</button>
+  <button onclick="copyAllHighlights()">一键复制设计亮点到所有版本</button>
+  <button onclick="copyAllInspirations()">一键复制设计灵感到所有版本</button>
+  <br><br>
+
+  <div id="versionBlocks"></div>
+  <button onclick="downloadVersionTxt2()">导出为TXT简介</button>
+
+  <script>
+    const versions = [
+      "小米手表S3", "小米手表S4", "小米手表S4 sport",
+      "红米5", "红米4", "手环8pro", "手环9pro",
+      "小米手环9", "小米手环8"
+    ];
+
+    const versionInputs = document.getElementById("versionInputs");
+    const versionBlocks = document.getElementById("versionBlocks");
+
+    versions.forEach(ver => {
+      versionInputs.innerHTML += `
+        <div class="input-row">
+          <label>${ver} 中文名：<input type="text" class="titleInput" data-version="${ver}"></label>
+        </div>`;
+
+      versionBlocks.innerHTML += `
+        <div class="version-block">
+          <div class="version-title">${ver}</div>
+          <label>【表盘设计说明】</label><br>
+          <label>设计亮点：<br><textarea class="highlightText" data-version="${ver}" placeholder="请输入设计亮点"></textarea></label><br>
+          <label>设计灵感：<textarea class="inspirationText" data-version="${ver}" placeholder="请输入设计灵感"></textarea></label><br>
+          <label>功能介绍：<br><textarea class="featureText" data-version="${ver}" placeholder="请输入该版本功能介绍"></textarea></label>
+        </div>`;
+    });
+
+    function forceBind() {
+      const devInput = document.getElementById('developerInput');
+      const designerInput = document.getElementById('designerInput');
+      designerInput.value = devInput.value;
+    }
+
+    function downloadVersionTxt2() {
+      let content = '';
+      const dev = document.getElementById('developerInput').value.trim();
+      const designer = dev;
+      const includeWelcome = document.getElementById('appendWelcome').checked;
+      const welcomeText = document.getElementById('welcomeText').value.trim();
+      const maxLength = 250;
+      let tooLongVersions = [];
+
+      content += `开发者：${dev || '未填写'}
+`;
+      content += `设计师：${designer || '未填写'}
+
+`;
+
+      versions.forEach(ver => {
+        const title = document.querySelector(\`.titleInput[data-version='\${ver}']\`)?.value.trim() || '';
+        const highlight = document.querySelector(\`.highlightText[data-version='\${ver}']\`)?.value.trim() || '';
+        const inspiration = document.querySelector(\`.inspirationText[data-version='\${ver}']\`)?.value.trim() || '';
+        const feature = document.querySelector(\`.featureText[data-version='\${ver}']\`)?.value.trim() || '';
+
+        const blockTextBody =
+          \`【表盘设计说明】
+\` +
+          \`设计亮点：
+\${highlight || '未填写'}
+\` +
+          \`设计灵感：\${inspiration || '未填写'}
+\` +
+          \`功能介绍：
+\${feature || '未填写'}
+\` +
+          \`【设计师信息】该表盘由外部设计师团队\${designer || '___'}设计并制作
+\` +
+          (includeWelcome && welcomeText ? \`\${welcomeText}
+\` : '');
+
+        const blockText = \`【\${ver}】
+\` +
+          \`中文名：\${title || '未填写'}
+\` +
+          blockTextBody + \`
+\`;
+
+        const plainLength = blockTextBody.replace(/\n/g, '').length + '【表盘设计说明】'.length;
+
+        if (plainLength >= maxLength) {
+          tooLongVersions.push(\`\${ver}（\${plainLength} 字）\`);
+        }
+
+        content += blockText;
+      });
+
+      if (tooLongVersions.length > 0) {
+        alert("以下版本简介超过" + maxLength + "字：\n" + tooLongVersions.join("\n"));
+      }
+
+      saveTxt(content, "功能简介.txt");
+    }
+
+    function copyAllTitles() {
+      const allInputs = document.querySelectorAll('.titleInput');
+      if (!allInputs.length) return;
+      const first = allInputs[0].value;
+      allInputs.forEach(input => input.value = first);
+    }
+
+    function copyAllFeatures() {
+      const allInputs = document.querySelectorAll('.featureText');
+      if (!allInputs.length) return;
+      const first = allInputs[0].value;
+      allInputs.forEach(input => input.value = first);
+    }
+
+    function copyAllHighlights() {
+      const allInputs = document.querySelectorAll('.highlightText');
+      if (!allInputs.length) return;
+      const first = allInputs[0].value;
+      allInputs.forEach(input => input.value = first);
+    }
+
+    function copyAllInspirations() {
+      const allInputs = document.querySelectorAll('.inspirationText');
+      if (!allInputs.length) return;
+      const first = allInputs[0].value;
+      allInputs.forEach(input => input.value = first);
+    }
+
+    function saveTxt(text, filename) {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>
