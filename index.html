@@ -1,8 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <title>功能简介导出工具（分版本块）</title>
+  <title>功能简介导出工具（最终修正版）</title>
   <style>
     body {
       font-family: "Microsoft YaHei", sans-serif;
@@ -142,38 +143,30 @@
 `;
 
       versions.forEach(ver => {
-        const title = document.querySelector(\`.titleInput[data-version='\${ver}']\`)?.value.trim() || '';
-        const highlight = document.querySelector(\`.highlightText[data-version='\${ver}']\`)?.value.trim() || '';
-        const inspiration = document.querySelector(\`.inspirationText[data-version='\${ver}']\`)?.value.trim() || '';
-        const feature = document.querySelector(\`.featureText[data-version='\${ver}']\`)?.value.trim() || '';
+        const title = document.querySelector(`.titleInput[data-version='\${ver}']`)?.value.trim() || '';
+        const highlight = document.querySelector(`.highlightText[data-version='\${ver}']`)?.value.trim() || '';
+        const inspiration = document.querySelector(`.inspirationText[data-version='\${ver}']`)?.value.trim() || '';
+        const feature = document.querySelector(`.featureText[data-version='\${ver}']`)?.value.trim() || '';
 
-        const blockTextBody =
-          \`【表盘设计说明】
-\` +
-          \`设计亮点：
+        const blockTextBody = `
+【表盘设计说明】
+设计亮点：
 \${highlight || '未填写'}
-\` +
-          \`设计灵感：\${inspiration || '未填写'}
-\` +
-          \`功能介绍：
+设计灵感：\${inspiration || '未填写'}
+功能介绍：
 \${feature || '未填写'}
-\` +
-          \`【设计师信息】该表盘由外部设计师团队\${designer || '___'}设计并制作
-\` +
-          (includeWelcome && welcomeText ? \`\${welcomeText}
-\` : '');
+【设计师信息】该表盘由外部设计师团队\${designer || '___'}设计并制作
+\${includeWelcome && welcomeText ? welcomeText : ''}
+`;
 
-        const blockText = \`【\${ver}】
-\` +
-          \`中文名：\${title || '未填写'}
-\` +
-          blockTextBody + \`
-\`;
+        const blockText = `【\${ver}】
+中文名：\${title || '未填写'}
+\${blockTextBody}
+`;
 
         const plainLength = blockTextBody.replace(/\n/g, '').length + '【表盘设计说明】'.length;
-
         if (plainLength >= maxLength) {
-          tooLongVersions.push(\`\${ver}（\${plainLength} 字）\`);
+          tooLongVersions.push(`\${ver}（\${plainLength} 字）`);
         }
 
         content += blockText;
@@ -188,29 +181,25 @@
 
     function copyAllTitles() {
       const allInputs = document.querySelectorAll('.titleInput');
-      if (!allInputs.length) return;
-      const first = allInputs[0].value;
+      const first = allInputs[0]?.value || '';
       allInputs.forEach(input => input.value = first);
     }
 
     function copyAllFeatures() {
       const allInputs = document.querySelectorAll('.featureText');
-      if (!allInputs.length) return;
-      const first = allInputs[0].value;
+      const first = allInputs[0]?.value || '';
       allInputs.forEach(input => input.value = first);
     }
 
     function copyAllHighlights() {
       const allInputs = document.querySelectorAll('.highlightText');
-      if (!allInputs.length) return;
-      const first = allInputs[0].value;
+      const first = allInputs[0]?.value || '';
       allInputs.forEach(input => input.value = first);
     }
 
     function copyAllInspirations() {
       const allInputs = document.querySelectorAll('.inspirationText');
-      if (!allInputs.length) return;
-      const first = allInputs[0].value;
+      const first = allInputs[0]?.value || '';
       allInputs.forEach(input => input.value = first);
     }
 
